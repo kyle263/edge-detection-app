@@ -1,0 +1,260 @@
+<ImageScreen>
+    id: ImageWidget
+    name: "ImageScreen"
+    
+    BoxLayout:
+        padding: 20
+        size_hint: (0.95, 1)
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 50
+
+            BoxLayout:
+                padding: (200, 20, 200, 0)
+                size_hint: (1, 0.2)
+                Button:
+                    text: 'Use Camera'
+                    size_hint: (0.4, 0.5)
+                    pos_hint: {'top':1}
+                    disabled: False
+                    on_release:
+                        ImageWidget.Camera_on()
+                        app.ShownImage = True
+
+            FloatLayout:
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    Line:
+                        width: 2
+                        rectangle: self.x, self.y, self.width, self.height
+                Image:
+                    id: my_image
+                    opacity: 1 if app.ShownImage else 0
+                    size_hint: (0.99, 0.99)
+                    pos_hint: {'center_x':0.5, 'center_y':0.5}
+
+                Button:
+                    text:"Click here to upload an image"
+                    background_color: 0, 0, 0, 0
+                    size_hint: (1, 1)
+                    font_size: 30
+                    pos_hint: {'center_x':0.5, 'center_y':0.5}
+                    opacity: 0 if app.ShownImage else 1
+                    disabled: True if app.ShownImage else False
+                    on_release:
+                        root.manager.transition.direction = 'up'
+                        root.manager.current = 'select'
+
+            BoxLayout:
+                padding: (0, 20, 0, 0)
+                size_hint: (1, 0.1)
+                
+                CheckBox:
+                    id: choose
+                    group: 'filter'
+                    disabled: False if app.ShownImage else True
+                    on_active: root.checkbox_click(self, self.active, "Canny")
+                Label:
+                    text: "Canny"
+                    pos_hint: {'left':1}
+
+
+                CheckBox:
+                    group: 'filter'
+                    disabled: False if app.ShownImage else True
+                    on_active: root.checkbox_click(self, self.active, "Laplacian")
+                Label:
+                    text: "Laplacian"
+
+
+                CheckBox:
+                    group: 'filter'
+                    disabled: False if app.ShownImage else True
+                    on_active: root.checkbox_click(self, self.active, "Prewitt")
+                Label:
+                    text: "Prewitt"
+
+
+                CheckBox:
+                    group: 'filter'
+                    disabled: False if app.ShownImage else True
+                    on_active: root.checkbox_click(self, self.active, "Roberts")
+                Label:
+                    text: "Roberts"
+            BoxLayout:
+                padding: (0, 20, 0, 0)
+                size_hint: (1, 0.1)
+                
+                CheckBox:
+                    id: choose
+                    group: 'filter'
+                    disabled: False if app.ShownImage else True
+                    on_active: root.checkbox_click(self, self.active, "Sobel")
+                Label:
+                    text: "Sobel"
+                    pos_hint: {'left':1}
+
+
+                CheckBox:
+                    group: 'filter'
+                    disabled: False if app.ShownImage else True
+                    on_active: root.checkbox_click(self, self.active, "Prewitt + Canny")
+                Label:
+                    text: "Prewitt + Canny"
+
+
+                CheckBox:
+                    group: 'filter'
+                    disabled: False if app.ShownImage else True
+                    on_active: root.checkbox_click(self, self.active, "SaliencyMap")
+                Label:
+                    text: "SaliencyMap"
+
+
+                # CheckBox:
+                #     group: 'filter'
+                #     disabled: False
+                #     on_active: root.checkbox_click(self, self.active, "Camera")
+                # Label:
+                #     text: "Camera"
+            
+            BoxLayout:
+                padding: (0, 20, 0, 0)
+                size_hint: (1, 0.2)
+
+                Button:
+                    text: 'Clear'
+                    size_hint: (0.4, 0.5)
+                    pos_hint: {'top':1}
+                    disabled: False if app.ShownImage else True
+                    on_release:
+                        app.ShownImage = False
+                        app.SubmitImage = False
+                        ImageWidget.Camera_off()
+
+                Button:
+                    id: submit_bt
+                    text: 'Submit'
+                    background_color: 1, 246/255, 189/255, 1
+                    size_hint: (0.4, 0.5)
+                    pos_hint: {'top':1}
+                    disabled: False if app.ShownImage else True
+                    on_release:
+                        app.SubmitImage = True
+                        ImageWidget.OutputImage()
+        
+        BoxLayout:
+            orientation: 'vertical'
+            pos_hint: {'top':0.85}
+            size_hint: (0.9, 0.8)
+            
+            BoxLayout:
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    Line:
+                        width: 2
+                        rectangle: self.x, self.y, self.width, self.height
+                Image:
+                    id: Output_image
+                    opacity: 1 if app.SubmitImage else 0
+                    size_hint: (0.99, 0.99)
+                    pos_hint: {'center_x':0.5, 'center_y':0.5}
+
+            BoxLayout:
+                size_hint: (1, 0.1)
+                Label:
+                    id: threshold1
+                    text: "threshold1"
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    size_hint: (0.3, 0.1)
+                Slider:
+                    id: slider1
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    size_hint: (1, 0.3)
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    min: 1
+                    max: 50
+                    step: 1
+                    orientation: "horizontal"
+                    on_value: root.slide(*args)
+                Label:
+                    id: threshold1_value
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    size_hint: (0.3, 0.1)
+            BoxLayout:
+                size_hint: (1, 0.1)
+                Label:
+                    id: threshold2
+                    text: "threshold2"
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    size_hint: (0.3, 0.1)
+                Slider:
+                    id: slider2
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    size_hint: (1, 0.3)
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    min: 1
+                    max: 50
+                    step: 1
+                    orientation: "horizontal"
+                    on_value: root.slide(*args)
+                Label:
+                    id: threshold2_value
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    size_hint: (0.3, 0.1)
+
+            BoxLayout:
+                size_hint: (1, 0.1)
+                Label:
+                    id: threshold3
+                    text: "threshold3"
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    size_hint: (0.3, 0.1)
+                Slider:
+                    id: slider3
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    size_hint: (1, 0.3)
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    min: 1
+                    max: 50
+                    step: 1
+                    orientation: "horizontal"
+                    on_value: root.slide(*args)
+                Label:
+                    id: threshold3_value
+                    opacity: 1 if app.SubmitImage else 0
+                    disabled: 0 if app.SubmitImage else 1
+                    pos_hint: {'center_x':0, 'center_y':0.5}
+                    size_hint: (0.3, 0.1)
+
+
+<SelectImage>:
+    id: SelectWidget
+    name: "SelectImage"
+
+    BoxLayout:
+        FileChooserIconView:
+            filters: ['*.png', '*.jpg']
+            id: filechooser
+            on_selection:
+                app.root.get_screen('image').press(filechooser.selection)
+                root.manager.transition.direction = 'down'
+                root.manager.current = 'image'
+                app.ShownImage = True
+                self.selection = ""
